@@ -189,8 +189,7 @@ func (s *SQLStore) getSubTree3(db sq.BaseRunner, boardID string, blockID string,
 		Join(s.tablePrefix + "blocks" + " as l2 on l2.parent_id = l1.id or l2.id = l1.id").
 		Join(s.tablePrefix + "blocks" + " as l3 on l3.parent_id = l2.id or l3.id = l2.id").
 		Where(sq.Eq{"l1.id": blockID}).
-		Where(sq.Eq{"l3.board_id": boardID}).
-		OrderBy("insertAt")
+		Where(sq.Eq{"l3.board_id": boardID})
 
 	if opts.BeforeUpdateAt != 0 {
 		query = query.Where(sq.LtOrEq{"update_at": opts.BeforeUpdateAt})
@@ -201,10 +200,13 @@ func (s *SQLStore) getSubTree3(db sq.BaseRunner, boardID string, blockID string,
 	}
 
 	if s.dbType == model.PostgresDBType {
-		query = query.Options("DISTINCT ON (l3.id)")
+		// postgres requires an orderby expression for any distinct clause.
+		query = query.OrderBy("l3.id").Options("DISTINCT ON (l3.id)")
 	} else {
 		query = query.Distinct()
 	}
+
+	query = query.OrderBy("insertAt")
 
 	if opts.Limit != 0 {
 		query = query.Limit(opts.Limit)
@@ -478,11 +480,17 @@ func (s *SQLStore) undeleteBlock(db sq.BaseRunner, blockID string, modifiedBy st
 	}
 
 	if len(blocks) == 0 {
+		s.logger.Debug("undeleteBlock, no history for block",
+			mlog.String("block_id", blockID),
+		)
 		return nil // deleting non-exiting block is not considered an error (for now)
 	}
 	block := blocks[0]
 
 	if block.DeleteAt == 0 {
+		s.logger.Debug("undeleteBlock, block not deleted",
+			mlog.String("block_id", blockID),
+		)
 		return nil // undeleting not deleted block is not considered an error (for now)
 	}
 
@@ -534,8 +542,14 @@ func (s *SQLStore) undeleteBlock(db sq.BaseRunner, blockID string, modifiedBy st
 		return err
 	}
 
-	if _, err := insertQuery.Exec(); err != nil {
+	if result, err := insertQuery.Exec(); err != nil {
 		return err
+	} else {
+		count, err := result.RowsAffected()
+		s.logger.Debug("undeleteBlock insert",
+			mlog.Int64("count", count),
+			mlog.Err(err),
+		)
 	}
 
 	return nil

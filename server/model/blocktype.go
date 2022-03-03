@@ -55,7 +55,7 @@ func BlockType2IDType(blockType BlockType) utils.IDType {
 		return utils.IDTypeCard
 	case TypeView:
 		return utils.IDTypeView
-	case TypeText, TypeComment:
+	case TypeText, TypeComment, TypeImage:
 		return utils.IDTypeBlock
 	}
 	return utils.IDTypeNone

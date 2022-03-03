@@ -419,7 +419,10 @@ func (s *SQLStore) deleteBlock(db sq.BaseRunner, blockID string, modifiedBy stri
 	}
 
 	if block == nil {
-		return nil // deleting non-exiting block is not considered an error (for now)
+		s.logger.Debug("deleteBlock, block does not exist",
+			mlog.String("block_id", blockID),
+		)
+		return nil // deleting non-existing block is not considered an error (for now)
 	}
 
 	fieldsJSON, err := json.Marshal(block.Fields)
@@ -483,7 +486,7 @@ func (s *SQLStore) undeleteBlock(db sq.BaseRunner, blockID string, modifiedBy st
 		s.logger.Debug("undeleteBlock, no history for block",
 			mlog.String("block_id", blockID),
 		)
-		return nil // deleting non-exiting block is not considered an error (for now)
+		return nil // deleting non-existing block is not considered an error (for now)
 	}
 	block := blocks[0]
 

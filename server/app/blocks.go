@@ -256,6 +256,10 @@ func (a *App) DeleteBlock(blockID string, modifiedBy string) error {
 
 	if block == nil {
 		// deleting non-existing block not considered an error
+		a.logger.Debug("Tried to delete non-existing block",
+			mlog.String("block_id", blockID),
+			mlog.Err(err),
+		)
 		return nil
 	}
 
@@ -294,6 +298,10 @@ func (a *App) UndeleteBlock(blockID string, modifiedBy string) error {
 
 	if len(blocks) == 0 {
 		// undeleting non-existing block not considered an error
+		a.logger.Debug("Tried to undelete block not in history",
+			mlog.String("block_id", blockID),
+			mlog.Err(err),
+		)
 		return nil
 	}
 

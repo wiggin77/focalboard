@@ -11,14 +11,16 @@ import {RootState} from './index'
 export const initialLoad = createAsyncThunk(
     'initialLoad',
     async () => {
-        const [team, boards, boardTemplates] = await Promise.all([
+        const [team, teams, boards, boardTemplates] = await Promise.all([
             client.getTeam(),
+            client.getTeams(),
             client.getBoards(),
             client.getTeamTemplates(),
         ])
 
         return {
             team,
+            teams,
             boards,
             boardTemplates,
         }
@@ -36,10 +38,7 @@ export const initialReadOnlyLoad = createAsyncThunk(
 export const loadBoardData = createAsyncThunk(
     'loadBoardData',
     async (boardID: string) => {
-        const [blocks] = await Promise.all([
-            client.getAllBlocks(boardID),
-        ])
-
+        const blocks = await client.getAllBlocks(boardID)
         return {
             blocks,
         }

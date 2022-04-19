@@ -26,7 +26,7 @@ func TestServeHTTP(t *testing.T) {
 	assert.Nil(err)
 	bodyString := string(bodyBytes)
 
-	b := assert.Equal("Hello, world!", bodyString)
+	assert.Equal("Hello, world!", bodyString)
 }
 
 func TestSetConfiguration(t *testing.T) {

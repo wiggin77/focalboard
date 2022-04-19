@@ -6,8 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mattermost/mattermost-server/v6/model"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/mattermost/mattermost-server/v6/model"
 )
 
 func TestServeHTTP(t *testing.T) {
@@ -25,7 +26,7 @@ func TestServeHTTP(t *testing.T) {
 	assert.Nil(err)
 	bodyString := string(bodyBytes)
 
-	assert.Equal("Hello, world!", bodyString)
+	b := assert.Equal("Hello, world!", bodyString)
 }
 
 func TestSetConfiguration(t *testing.T) {

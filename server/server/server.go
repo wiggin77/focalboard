@@ -214,7 +214,7 @@ func NewStore(config *config.Configuration, logger *mlog.Logger) (store.Store, e
 		return nil, err
 	}
 
-	sqlDB.Ping()
+	err = sqlDB.Ping()
 	if err != nil {
 		logger.Error(`Database Ping failed`, mlog.Err(err))
 		return nil, err

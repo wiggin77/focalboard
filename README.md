@@ -52,14 +52,14 @@ Our [developer guide](https://developers.mattermost.com/contribute/focalboard/pe
 
 To build the server:
 
-```
+```bash
 make prebuild
 make
 ```
 
 To run the server:
 
-```
+```bash
  ./bin/focalboard-server
 ```
 
